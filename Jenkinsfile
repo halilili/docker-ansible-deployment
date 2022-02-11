@@ -1,50 +1,59 @@
-pipeline{
+pipeline {
     agent any
+    
     tools {
-      maven 'maven3'
+      maven 'MavenBuild'
     }
+    
     environment {
       DOCKER_TAG = getVersion()
     }
-    stages{
-        stage('SCM'){
-            steps{
-                git credentialsId: 'github', 
-                    url: 'https://github.com/javahometech/dockeransiblejenkins'
+    
+    stages {
+        
+        
+        stage('SCM') {
+            steps {
+                git credentialsId: 'github-access', 
+                    url: 'https://github.com/halilili/docker-ansible-jenkins-deployment'
+                
             }
         }
         
-        stage('Maven Build'){
-            steps{
-                sh "mvn clean package"
+        
+        stage('Build Our Code') {
+            steps {
+               sh "mvn clean package"
+            }
+        }
+        stage('Docker Build') {
+            steps {
+              sh "docker build . -t hassanali70826/myapp:${DOCKER_TAG}"
             }
         }
         
-        stage('Docker Build'){
-            steps{
-                sh "docker build . -t kammana/hariapp:${DOCKER_TAG} "
-            }
-        }
         
-        stage('DockerHub Push'){
-            steps{
-                withCredentials([string(credentialsId: 'docker-hub', variable: 'dockerHubPwd')]) {
-                    sh "docker login -u kammana -p ${dockerHubPwd}"
+        stage('DockerHub Push') {
+            steps {
+                withCredentials([string(credentialsId: 'docker-password', variable: 'dockerHubPassword')]) {
+                    sh "docker login -u hassanali70826 -p ${dockerHubPassword}"
                 }
                 
-                sh "docker push kammana/hariapp:${DOCKER_TAG} "
+                sh "docker push hassanali70826/myapp:${DOCKER_TAG}"
             }
         }
         
-        stage('Docker Deploy'){
-            steps{
-              ansiblePlaybook credentialsId: 'dev-server', disableHostKeyChecking: true, extras: "-e DOCKER_TAG=${DOCKER_TAG}", installation: 'ansible', inventory: 'dev.inv', playbook: 'deploy-docker.yml'
+        
+        stage('Docker Deployment') {
+            steps {
+                ansiblePlaybook credentialsId: 'aws-jenkins-server-aws-ssh-conn', disableHostKeyChecking: true, extras: " -e DOCKER_TAG=${DOCKER_TAG}", installation: 'ansible', inventory: 'dev.inv', playbook: 'deploy-docker.yml'
             }
         }
     }
 }
 
-def getVersion(){
-    def commitHash = sh label: '', returnStdout: true, script: 'git rev-parse --short HEAD'
-    return commitHash
+def getVersion()
+{
+  def commitHash = sh label: '', returnStdout: true, script: 'git rev-parse --short HEAD'
+  return commitHash
 }
