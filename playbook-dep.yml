@@ -13,7 +13,6 @@
         name: python-pip3
         update_cache: yes
         state: present
-        become: true
     - name: Install Python packages
       pip: name={{ item }}
       with_items:
