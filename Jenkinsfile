@@ -26,6 +26,8 @@ pipeline {
                sh "mvn clean package"
             }
         }
+        
+        
         stage('Docker Build') {
             steps {
               sh "docker build . -t hassanali70826/myapp:${DOCKER_TAG}"
@@ -46,8 +48,8 @@ pipeline {
         
         stage('Ansible Deployment') {
             steps {
-                //ansiblePlaybook credentialsId: 'aws-jenkins-server-aws-ssh-conn', disableHostKeyChecking: true, extras: " -e DOCKER_TAG=${DOCKER_TAG}", installation: 'ansible', inventory: 'dev.inv', playbook: 'deploy-docker.yml'
-                echo "commit the above ansible since the server is full"
+                ansiblePlaybook credentialsId: 'aws-jenkins-server-aws-ssh-conn', disableHostKeyChecking: true, extras: " -e DOCKER_TAG=${DOCKER_TAG}", installation: 'ansible', inventory: 'dev.inv', playbook: 'playbook-dep.yml'
+               
             }
         }
     }
