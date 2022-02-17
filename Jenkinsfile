@@ -45,17 +45,9 @@ pipeline {
             }
         }
         
-        stage('Ansible Pre-Deployment Preperation') {
+        stage('Ansible Deployment and Packages Preperation') {
             steps {
-                ansiblePlaybook credentialsId: 'aws-jenkins-server-aws-ssh-conn', disableHostKeyChecking: true, extras: " -e DOCKER_TAG=${DOCKER_TAG}", installation: 'ansible', inventory: 'dev.inv', playbook: 'ansible-packages-prep.yml'
-               
-            }
-        }
-        
-        
-        stage('Ansible Run Container Deployment') {
-            steps {
-                ansiblePlaybook credentialsId: 'aws-jenkins-server-aws-ssh-conn', disableHostKeyChecking: true, extras: " -e DOCKER_TAG=${DOCKER_TAG}", installation: 'ansible', inventory: 'dev.inv', playbook: 'ansible-run-container.yml'
+                ansiblePlaybook credentialsId: 'aws-jenkins-server-aws-ssh-conn', disableHostKeyChecking: true, extras: " -e DOCKER_TAG=${DOCKER_TAG}", installation: 'ansible', inventory: 'dev.inv', playbook: 'ansible-deployment.yml'
                
             }
         }
