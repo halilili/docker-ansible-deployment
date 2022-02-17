@@ -10,7 +10,7 @@
       become: true
     - name: install python-pip3
       apt:
-        name: python-pip3
+        name: python3-pip #python-pip3
         update_cache: yes
         state: present
     - name: Install Python packages
