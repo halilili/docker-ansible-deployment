@@ -8,9 +8,12 @@
     - name: Upgrade all apt packages
       apt: upgrade=yes force_apt_get=yes
       become: true
-    - name: Install Python pip
-      apt: name=python-pip update_cache=true state=present force_apt_get=yes
-      become: true
+    - name: install python-pip3
+      apt:
+        name: python-pip3
+        update_cache: yes
+        state: present
+        become: true
     - name: Install Python packages
       pip: name={{ item }}
       with_items:
