@@ -31,10 +31,3 @@
       pip:
         name: docker-py
         state: present
-    - name: Start the container
-      docker_container:
-        name: hariapp
-        image: "hassanali70826/myapp:{{DOCKER_TAG}}"
-        state: started
-        published_ports:
-          - 0.0.0.0:8081:8081
